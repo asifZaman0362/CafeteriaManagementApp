@@ -1,0 +1,18 @@
+{
+  "name": "cafeteria-manager",
+  "version": "0.0.1",
+  "description": "Something that helps you manage cafeterias",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "test",
+    "build": "tsc src/* --outDir build",
+    "start": "node ."
+  },
+  "keywords": [
+    "cafeteria",
+    "management",
+    "react"
+  ],
+  "author": "zero362001@gmail.com",
+  "license": "ISC"
+}
