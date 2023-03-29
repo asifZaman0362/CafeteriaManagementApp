@@ -48,7 +48,7 @@ function getToken(req: Request): AccessToken | null {
     } else return null;
 }
 
-async function generateToken(username, usertype) {
+async function generateToken(username: string, usertype: AccessLevel) {
     const user = {
         username: username,
         usertype: usertype
