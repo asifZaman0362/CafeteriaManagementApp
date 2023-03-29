@@ -20,5 +20,5 @@ const InventorySchema = new Schema<IInventory>({
     entries: { type: [EntrySchema], required: true }
 });
 
-const Inventory = model<IInventory>('Attendance', InventorySchema);
-export default Inventory;
+export const Inventory = model<IInventory>("Inventory", InventorySchema);
+export const InventoryItem = model<IEntry>("InventoryItem", EntrySchema);
