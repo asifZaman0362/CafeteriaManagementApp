@@ -1,11 +1,12 @@
-import { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model, ObjectId, Types } from 'mongoose';
 
 interface Item {
-    item_id: string,
+    item_id: ObjectId,
     quantity: number
 }
 
 interface IOrder extends Document {
+    cashier_id: ObjectId,
     customer_name: string,
     customer_phone: string,
     items: Item[],
@@ -13,11 +14,12 @@ interface IOrder extends Document {
 }
 
 const ItemSchema = new Schema<Item>({
-    item_id: { type: String, required: true },
+    item_id: { type: Types.ObjectId, required: true },
     quantity: { type: Number, required: true }
 });
 
 const OrderSchema = new Schema<IOrder>({
+    cashier_id: { type: Types.ObjectId, required: true },
     customer_name: { type: String, required: true },
     customer_phone: { type: String, required: true },
     items: { type: [ItemSchema], required: true },

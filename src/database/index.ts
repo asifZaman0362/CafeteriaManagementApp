@@ -1,7 +1,12 @@
 import { Schema, model, connect } from "mongoose";
 import { AccessLevel, AccessLevelSchemaType } from "../database/types/accessLevel";
+import Order from "./order";
 import User from "./user";
 
+interface Item {
+    id: string,
+    amount: number
+}
 
 export async function setup() {
     return await connect("mongodb://127.0.0.1:27017/test");
@@ -34,4 +39,13 @@ export async function updateUser(username: string, password: string, email: stri
     } else {
         return false;
     }
+}
+
+export async function createOrder(customer: string, phone: string, items: Item[], cashier: string) {
+    const order = new Order({
+        customer_name: customer,
+        customer_phone: phone,
+        items: items,
+        cashier_id: cashier
+    });
 }
