@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 
 interface IEmployee {
     firstname: string,
@@ -15,3 +15,6 @@ const EmployeeSchema = new Schema<IEmployee>({
     emailId: { type: String, required: true },
     address: { type: String, required: true },
 });
+
+const Employee = model<IEmployee>('Employee', EmployeeSchema);
+export default Employee;
