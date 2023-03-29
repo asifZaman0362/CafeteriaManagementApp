@@ -1,30 +1,46 @@
 import mongoose, { Document, Schema, model, ObjectId, Types } from 'mongoose';
 
-interface Item {
-    item_id: ObjectId,
+export interface Item {
+    item_id: Types.ObjectId,
     quantity: number
 }
 
 interface IOrder extends Document {
-    cashier_id: ObjectId,
+    cashier_id: Types.ObjectId,
     customer_name: string,
     customer_phone: string,
     items: Item[],
-    price: number
+    price: number,
+    paid: boolean
 }
 
 const ItemSchema = new Schema<Item>({
-    item_id: { type: Types.ObjectId, required: true },
+    item_id: { 
+        type: Schema.Types.ObjectId, 
+        default: () => new Types.ObjectId(),
+        required: true 
+    },
     quantity: { type: Number, required: true }
 });
 
 const OrderSchema = new Schema<IOrder>({
-    cashier_id: { type: Types.ObjectId, required: true },
+    cashier_id: { type: Schema.Types.ObjectId, required: true },
     customer_name: { type: String, required: true },
     customer_phone: { type: String, required: true },
     items: { type: [ItemSchema], required: true },
-    price: { type: Number, required: true }
+    price: { type: Number, required: true },
+    paid: { type: Boolean, required: true }
 });
 
-const Order = model<IOrder>('Order', OrderSchema);
-export default Order;
+OrderSchema.pre<IOrder>('validate', function (next) {
+    if (this.cashier_id && typeof this.cashier_id == 'string') {
+        try {
+            this.cashier_id = new Types.ObjectId(this.cashier_id);
+        } catch (err) {
+            next(new Error('invalid id'));
+        }
+    }
+    next();
+});
+
+export const Order = model<IOrder>('Order', OrderSchema);

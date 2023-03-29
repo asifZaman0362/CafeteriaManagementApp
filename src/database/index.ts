@@ -1,11 +1,11 @@
-import { Schema, model, connect } from "mongoose";
+import { Schema, model, connect, Types } from "mongoose";
 import { AccessLevel, AccessLevelSchemaType } from "../database/types/accessLevel";
-import Order from "./order";
+import { Order, Item as SchemaItem } from "./order";
 import User from "./user";
 
 interface Item {
-    id: string,
-    amount: number
+    item_id: string,
+    quantity: number
 }
 
 export async function setup() {
@@ -48,4 +48,22 @@ export async function createOrder(customer: string, phone: string, items: Item[]
         items: items,
         cashier_id: cashier
     });
+    return await (await order.save()).id;
+}
+
+export async function cancelOrder(order_id: string) {
+    const order = await Order.findById(order_id);
+    if (!order) return null;
+    else if (order.paid) return null;
+    else return await order.delete();
+}
+
+export async function addItems(order_id: string, items: Item[]) {
+    const order = await Order.findById(order_id);
+    if (!order) return null;
+    else if (order.paid) return null;
+    else {
+        const newItems = items.map(item => ({...item, item_id: new Types.ObjectId(item.item_id)}));
+        order.items.push(...newItems);
+    }
 }
