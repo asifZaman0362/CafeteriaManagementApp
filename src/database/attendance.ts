@@ -1,4 +1,5 @@
 import mongoose, { model, Document, Schema, Types } from "mongoose";
+import { getEmployeeById } from "./employee";
 
 interface IEntry {
   userid: Types.ObjectId;
@@ -26,6 +27,25 @@ const AttendanceSchema = new Schema<IAttendance>({
 });
 
 export const Attendance = model<IAttendance>("Attendance", AttendanceSchema);
+
+export async function getRecord(date: Date) {
+  const record = await Attendance.findOne({ date: date });
+  if (record) {
+    return {
+      date: date,
+      entries: record.entries.map(async (entry) => {
+        const name = await getEmployeeById(entry.userid);
+        return {
+          employee: {
+            id: entry.userid.toString(),
+            name: name,
+            present: entry.attendance,
+          },
+        };
+      }),
+    };
+  }
+}
 
 export async function addRecord(date: Date, entries: RawEntry[]) {
   const attendance = new Attendance({
