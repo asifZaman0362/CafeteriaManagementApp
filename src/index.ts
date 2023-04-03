@@ -5,16 +5,20 @@ import access from "./access";
 import menu from "./menu";
 import billing from "./billing";
 import inventory from "./inventory";
+import authentication from "./authentcation";
 
 dotenv.config();
 
 const app: express.Application = express();
 
 // setup routes here
-app.use('/attendace', attendace);
-app.use('/access', access);
-app.use('/menu', menu);
-app.use('/billing', billing);
-app.use('/inventory', inventory);
+app.use("/attendace", attendace);
+app.use("/access", access);
+app.use("/menu", menu);
+app.use("/billing", billing);
+app.use("/inventory", inventory);
+app.use("/auth", authentication);
 
-app.listen(process.env.PORT_NUMBER, () => console.log("server started at " + process.env.PORT_NUMBER));
+app.listen(process.env.PORT_NUMBER, () =>
+  console.log("server started at " + process.env.PORT_NUMBER)
+);
