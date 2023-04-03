@@ -1,19 +1,44 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { addUser as AddUser, updateUser as UpdateUser } from "./database/user";
+import { Request, Response, Router } from "express";
+import { AccessLevel } from "./database/types";
+import * as database from "./database/user";
 
 const router = Router();
 export default router;
 
-function addUser(req: Request, res: Response, next: NextFunction) {
-  return res.status(200).json({ status: "Success" });
+async function addUser(req: Request, res: Response) {
+  const username = req.body.username;
+  const password = req.body.password;
+  const accessLevel = req.body.accessLevel as AccessLevel;
+  const email = req.body.email;
+  const result = await database.addUser(username, password, email, accessLevel);
+  if (result) {
+    return res.status(200);
+  } else {
+    return res.status(500);
+  }
 }
 
-function removeUser(req: Request, res: Response, next: NextFunction) {
-  return res.status(200).json({ status: "Success" });
+async function removeUser(req: Request, res: Response) {
+  const username = req.body.username;
+  const accessLevel = req.body.accessLevel;
+  const result = await database.removeUser(username, accessLevel);
+  if (result) {
+    return res.status(200);
+  } else {
+    return res.status(500);
+  }
 }
 
-function updateUser(req: Request, res: Response, next: NextFunction) {
-  return res.status(200).json({ status: "Success" });
+async function updateUser(req: Request, res: Response) {
+  const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
+  const result = await database.updateUser(username, password, email);
+  if (result) {
+    return res.status(200);
+  } else {
+    return res.status(500);
+  }
 }
 
 router.post("/addUser", addUser);
