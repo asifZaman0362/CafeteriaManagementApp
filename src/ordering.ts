@@ -1,20 +1,42 @@
 import { NextFunction, Request, Response, Router } from "express";
+import * as database from "./database/order";
 
 const router = Router();
 export default router;
 
-function addOrder(req: Request, res: Response, next: NextFunction) {
-    return res.status(200).json({status: "Success"});
+async function addOrder(req: Request, res: Response) {
+  const cashier = req.body.cashier;
+  const customer_name = req.body.customer;
+  const phone = req.body.phone;
+  const items = req.body.items;
+  const order = await database.createOrder(
+    customer_name,
+    phone,
+    items,
+    cashier
+  );
+  if (order) {
+    return res.status(200).json({ id: order });
+  } else return res.status(500);
 }
 
-function cancelOrder(req: Request, res: Response, next: NextFunction) {
-    return res.status(200).json({status: "Success"});
+async function cancelOrder(req: Request, res: Response) {
+  const id = req.body.order_id;
+  const result = await database.cancelOrder(id);
+  if (result) {
+    return res.status(200);
+  } else return res.status(500);
 }
 
-function updateOrder(req: Request, res: Response, next: NextFunction) {
-    return res.status(200).json({status: "Success"});
+async function updateOrder(req: Request, res: Response) {
+  const id = req.body.order_id;
+  const items = req.body.items;
+  const order = await database.updateItems(id, items);
+  if (order) {
+    return res.status(200).json({ id: order });
+  } else return res.status(500);
 }
 
-router.post('/addOrder', addOrder);
-router.post('/cancelOrder', cancelOrder);
-router.post('/updateOrder', updateOrder);
+router.post("/addOrder", addOrder);
+router.post("/cancelOrder", cancelOrder);
+router.post("/updateOrder", updateOrder);
