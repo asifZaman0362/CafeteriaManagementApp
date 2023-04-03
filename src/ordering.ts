@@ -37,6 +37,17 @@ async function updateOrder(req: Request, res: Response) {
   } else return res.status(500);
 }
 
+async function processOrder(req: Request, res: Response) {
+  // interface with payment gateway here
+  // for now, we manually set the order status to paid upon verifying payment manually
+  const order_id = req.body.order_id;
+  const result = await database.setPaid(order_id);
+  if (result == database.PaymentStatus.Successfull) {
+    return res.status(200);
+  } else return res.status(500).json({ error: result });
+}
+
 router.post("/addOrder", addOrder);
 router.post("/cancelOrder", cancelOrder);
 router.post("/updateOrder", updateOrder);
+router.post("/processOrder", processOrder);

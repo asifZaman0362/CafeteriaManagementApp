@@ -5,6 +5,14 @@ export interface Item {
   quantity: number;
 }
 
+export enum PaymentStatus {
+  Successfull = "Successfull",
+  Failed = "Failed",
+  AlreadyPaid = "AlreadyPaid",
+  OrderDoesntExist = "OrderDoesntExist",
+  InternalError = "InternalError",
+}
+
 interface IOrder extends Document {
   cashier_id: Types.ObjectId;
   customer_name: string;
@@ -94,4 +102,13 @@ export async function updateItems(order_id: string, items: Item[]) {
     }));
     return await order.save();
   }
+}
+
+export async function setPaid(order_id: string): Promise<PaymentStatus> {
+  const order = await Order.findById(order_id);
+  if (!order) return PaymentStatus.OrderDoesntExist;
+  else if (order.paid) return PaymentStatus.AlreadyPaid;
+  order.paid = true;
+  if (await order.save()) return PaymentStatus.Successfull;
+  else return PaymentStatus.InternalError;
 }
