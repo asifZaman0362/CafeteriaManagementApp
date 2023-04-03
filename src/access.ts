@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { addUser as AddUser, updateUser as UpdateUser } from "./database";
+import { addUser as AddUser, updateUser as UpdateUser } from "./database/user";
 
 const router = Router();
 export default router;
