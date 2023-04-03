@@ -29,8 +29,12 @@ export async function addUser(
   email: string,
   accessLevel: AccessLevel
 ) {
-  let check = User.findOne({ username: username });
+  let check = await User.findOne({
+    username: username,
+    accessLevel: accessLevel,
+  });
   if (check != null) {
+    console.log("User already exists!");
     return false;
   }
   let user = new User({
@@ -39,6 +43,7 @@ export async function addUser(
     accessLevel: accessLevel,
     email: email,
   });
+  console.debug(username, email, password);
   return await user.save();
 }
 
