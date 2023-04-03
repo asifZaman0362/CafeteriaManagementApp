@@ -89,6 +89,17 @@ export async function updateUser(
   }
 }
 
+export async function removeUser(username: string, accessLevel: AccessLevel) {
+  const user = await User.findOne({
+    username: username,
+    accessLevel: accessLevel,
+  });
+  if (user) {
+    return await user.delete();
+  }
+  return false;
+}
+
 export async function createOrder(
   customer: string,
   phone: string,
@@ -123,5 +134,19 @@ export async function addItems(order_id: string, items: Item[]) {
       item_id: new Types.ObjectId(item.item_id),
     }));
     order.items.push(...newItems);
+    return order.save();
+  }
+}
+
+export async function updateItems(order_id: string, items: Item[]) {
+  const order = await Order.findById(order_id);
+  if (!order) return false;
+  else if (order.paid) return null;
+  else {
+    order.items = items.map((item) => ({
+      ...item,
+      item_id: new Types.ObjectId(item.item_id),
+    }));
+    return await order.save();
   }
 }
