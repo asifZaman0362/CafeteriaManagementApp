@@ -1,8 +1,5 @@
 import { Schema, model, connect, Types } from "mongoose";
-import {
-  AccessLevel,
-  AccessLevelSchemaType,
-} from "../database/types/accessLevel";
+import { AccessLevel } from "./types";
 import { Order, Item as SchemaItem } from "./order";
 import User from "./user";
 

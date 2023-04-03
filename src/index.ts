@@ -6,10 +6,22 @@ import menu from "./menu";
 import billing from "./billing";
 import inventory from "./inventory";
 import authentication from "./authentcation";
+import { setup } from "./database";
 
 dotenv.config();
 
 const app: express.Application = express();
+
+async function start() {
+  console.log("started");
+  let connection = await setup();
+  if (!connection) {
+    console.error("failed to connect to mongodb");
+    process.exit(-1);
+  } else {
+    console.log("connected to mongodb!");
+  }
+}
 
 // setup routes here
 app.use("/attendace", attendace);
@@ -19,6 +31,7 @@ app.use("/billing", billing);
 app.use("/inventory", inventory);
 app.use("/auth", authentication);
 
-app.listen(process.env.PORT_NUMBER, () =>
-  console.log("server started at " + process.env.PORT_NUMBER)
-);
+app.listen(process.env.PORT_NUMBER, async () => {
+  await start();
+  console.log("server started at " + process.env.PORT_NUMBER);
+});

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { checkPassword } from "./auth";
-import { AccessLevel } from "./database/types/accessLevel";
+import { AccessLevel } from "./database/types";
 
 const router = Router();
 export default router;

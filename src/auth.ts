@@ -2,11 +2,8 @@ import * as argon2 from "argon2";
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import { getPasswordHash, addUser, updateUser } from "./database";
-import {
-  AccessLevel,
-  AccessLevelSchemaType,
-} from "./database/types/accessLevel";
 import crypto from "crypto";
+import { AccessLevel } from "./database/types";
 
 interface AccessToken {
   username: string;
