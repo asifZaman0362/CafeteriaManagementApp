@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { checkPassword, getHash, getToken } from "./auth";
-import { addUser, updateTokenVersion } from "./database";
+import { addUser, updateTokenVersion } from "./database/user";
 import { AccessLevel } from "./database/types";
 
 const router = Router();
