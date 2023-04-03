@@ -5,6 +5,11 @@ export interface Item {
   quantity: number;
 }
 
+export interface RawItem {
+  item_id: string;
+  quantity: number;
+}
+
 export enum PaymentStatus {
   Successfull = "Successfull",
   Failed = "Failed",
@@ -77,28 +82,28 @@ export async function cancelOrder(order_id: string) {
   else return await order.delete();
 }
 
-export async function addItems(order_id: string, items: Item[]) {
+export async function addItems(order_id: string, items: RawItem[]) {
   const order = await Order.findById(order_id);
   if (!order) return null;
   else if (order.paid) return null;
   else {
     const newItems = items.map((item) => ({
-      ...item,
       item_id: new Types.ObjectId(item.item_id),
+      quantity: item.quantity,
     }));
     order.items.push(...newItems);
     return order.save();
   }
 }
 
-export async function updateItems(order_id: string, items: Item[]) {
+export async function updateItems(order_id: string, items: RawItem[]) {
   const order = await Order.findById(order_id);
   if (!order) return false;
   else if (order.paid) return null;
   else {
     order.items = items.map((item) => ({
-      ...item,
       item_id: new Types.ObjectId(item.item_id),
+      quantity: item.quantity,
     }));
     return await order.save();
   }
