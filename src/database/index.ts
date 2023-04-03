@@ -23,6 +23,33 @@ export async function getPasswordHash(
   return result?.password;
 }
 
+export async function getTokenVersion(
+  username: string,
+  accessLevel: AccessLevel
+) {
+  const result = await User.findOne({
+    username: username,
+    accessLevel: accessLevel,
+  });
+  return result?.token_version;
+}
+
+export async function updateTokenVersion(
+  username: string,
+  accessLevel: AccessLevel
+) {
+  const result = await User.findOne({
+    username: username,
+    accessLevel: accessLevel,
+  });
+  if (result) {
+    result.token_version++;
+    return await result.save();
+  } else {
+    return false;
+  }
+}
+
 export async function addUser(
   username: string,
   password: string,

@@ -6,6 +6,7 @@ interface IUser {
   username: string;
   password: string;
   accessLevel: AccessLevel;
+  token_version: number;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -13,6 +14,7 @@ const UserSchema = new Schema<IUser>({
   password: { type: String, required: true },
   email: { type: String, required: true },
   accessLevel: { type: String, enum: AccessLevel, required: true },
+  token_version: { type: Number, default: 0, required: true },
 });
 
 const User = model<IUser>("User", UserSchema);
