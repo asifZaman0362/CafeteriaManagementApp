@@ -43,6 +43,6 @@ async function deleteRecord(req: Request, res: Response) {
 }
 
 router.post("/submit", createAttendance);
-router.get("/list", listAttendance);
-router.get("/update", updateEntry);
+router.post("/update", updateEntry);
 router.get("/remove", deleteRecord);
+router.get("/list", listAttendance);
