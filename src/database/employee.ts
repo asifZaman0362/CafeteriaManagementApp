@@ -3,7 +3,7 @@ import { Schema, model, Types } from "mongoose";
 interface IEmployee {
   firstname: string;
   lastname: string;
-  phoneNumber: number;
+  phoneNumber: string;
   emailId: string;
   address: string;
 }
@@ -11,7 +11,7 @@ interface IEmployee {
 const EmployeeSchema = new Schema<IEmployee>({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
-  phoneNumber: { type: Number, required: true },
+  phoneNumber: { type: String, required: true },
   emailId: { type: String, required: true },
   address: { type: String, required: true },
 });
@@ -24,4 +24,43 @@ export async function getEmployeeById(id: string | Types.ObjectId) {
       name: "no name",
     }
   );
+}
+
+export async function addEmployee(
+  firstname: string,
+  lastname: string,
+  phoneNumber: string,
+  emailId: string,
+  address: string
+) {
+  const employee = new Employee({
+    firstname,
+    lastname,
+    phoneNumber,
+    emailId,
+    address,
+  });
+  return await employee.save();
+}
+
+export async function updateEmployee(
+  id: string,
+  firstname: string,
+  lastname: string,
+  phoneNumber: string,
+  emailId: string,
+  address: string
+) {
+  const employee = await Employee.findById(id);
+  if (!employee) return;
+  employee.firstname = firstname;
+  employee.lastname = lastname;
+  employee.phoneNumber = phoneNumber;
+  employee.emailId = emailId;
+  employee.address = address;
+  return await employee.save();
+}
+
+export async function removeEmployee(id: string) {
+  return await (await Employee.findById(id))?.delete();
 }
