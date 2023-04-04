@@ -1,4 +1,4 @@
-import mongoose, { model, Document, Schema, Types } from "mongoose";
+import { model, Document, Schema, Types } from "mongoose";
 import { getEmployeeById } from "./employee";
 
 interface IEntry {

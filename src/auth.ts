@@ -1,12 +1,7 @@
 import * as argon2 from "argon2";
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-import {
-  getPasswordHash,
-  getTokenVersion,
-  addUser,
-  updateUser,
-} from "./database/user";
+import { getPasswordHash, getTokenVersion } from "./database/user";
 import crypto from "crypto";
 import { AccessLevel } from "./database/types";
 
