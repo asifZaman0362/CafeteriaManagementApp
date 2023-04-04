@@ -41,6 +41,7 @@ export async function updateItem(
   if (!item) return;
   item.name = name;
   item.quantity = quantity;
+  return await item.save();
 }
 
 export async function removeItem(item_id: string) {
