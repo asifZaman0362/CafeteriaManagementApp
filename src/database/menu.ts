@@ -30,8 +30,8 @@ export async function addCategory(name: string) {
 }
 
 export async function removeCategory(category_id: string) {
-  const category = Category.findById(category_id);
-  return await category?.deleteOne();
+  const category = await Category.findById(category_id);
+  return await category?.delete();
 }
 
 export async function updateCategory(category_id: string, name: string) {
@@ -69,6 +69,6 @@ export async function updateItem(
 }
 
 export async function removeItem(item_id: string) {
-  const item = Item.findById(item_id);
-  return await item?.deleteOne();
+  const item = await Item.findById(item_id);
+  return await item?.delete();
 }
