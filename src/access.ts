@@ -44,6 +44,18 @@ async function updateUser(req: Request, res: Response) {
   }
 }
 
+async function getUser(req: Request, res: Response) {
+  const user = await database.getUser(req.body.id);
+  return user ? res.status(200).json(user) : res.status(404);
+}
+
+async function listUsers(_req: Request, res: Response) {
+  const users = await database.listUsers();
+  return users ? res.status(200).json(users) : res.status(404);
+}
+
 router.post("/addUser", addUser);
 router.post("/removeUser", removeUser);
 router.post("/updateUser", updateUser);
+router.get("/listUsers", listUsers);
+router.get("/viewUser", getUser);

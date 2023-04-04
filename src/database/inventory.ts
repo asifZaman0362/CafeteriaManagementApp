@@ -48,3 +48,7 @@ export async function removeItem(item_id: string) {
   const item = await InventoryItem.findById(item_id);
   return await item?.delete();
 }
+
+export async function listInventory() {
+  return await Item.find();
+}

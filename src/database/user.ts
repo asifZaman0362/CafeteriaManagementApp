@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { AccessLevel } from "./types";
 
 interface IUser {
@@ -105,4 +105,12 @@ export async function removeUser(username: string, accessLevel: AccessLevel) {
     return await user.delete();
   }
   return false;
+}
+
+export async function getUser(id: string) {
+  return await User.findById(new Types.ObjectId(id));
+}
+
+export async function listUsers() {
+  return await User.find();
 }

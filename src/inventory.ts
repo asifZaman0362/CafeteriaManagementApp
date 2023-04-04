@@ -31,6 +31,12 @@ async function updateItem(req: Request, res: Response) {
   } else return res.status(500);
 }
 
+async function listInventory(_req: Request, res: Response) {
+  const result = database.listInventory();
+  return result ? res.status(200).json(result) : res.status(404);
+}
+
 router.post("/addItem", addItem);
 router.post("/removeItem", removeItem);
 router.post("/updateItem", updateItem);
+router.get("/listInventory", listInventory);

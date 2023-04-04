@@ -19,6 +19,7 @@ export enum PaymentStatus {
 }
 
 interface IOrder extends Document {
+  date: Date;
   cashier_id: Types.ObjectId;
   customer_name: string;
   customer_phone: string;
@@ -37,12 +38,13 @@ const ItemSchema = new Schema<Item>({
 });
 
 const OrderSchema = new Schema<IOrder>({
+  date: { type: Date, required: true },
   cashier_id: { type: Schema.Types.ObjectId, required: true },
   customer_name: { type: String, required: true },
   customer_phone: { type: String, required: true },
   items: { type: [ItemSchema], required: true },
   price: { type: Number, required: true },
-  paid: { type: Boolean, required: true },
+  paid: { type: Boolean, default: false, required: true },
 });
 
 OrderSchema.pre<IOrder>("validate", function (next) {
@@ -59,12 +61,14 @@ OrderSchema.pre<IOrder>("validate", function (next) {
 export const Order = model<IOrder>("Order", OrderSchema);
 
 export async function createOrder(
+  date: Date,
   customer: string,
   phone: string,
   items: Item[],
   cashier: string
 ) {
   const order = new Order({
+    date: date,
     customer_name: customer,
     customer_phone: phone,
     items: items,
@@ -116,4 +120,14 @@ export async function setPaid(order_id: string): Promise<PaymentStatus> {
   order.paid = true;
   if (await order.save()) return PaymentStatus.Successfull;
   else return PaymentStatus.InternalError;
+}
+
+export async function getOrder(order_id: string) {
+  return await Order.findById(new Types.ObjectId(order_id));
+}
+
+export async function getOrders(date: Date | undefined) {
+  if (date) {
+    return await Order.find({ date: Date });
+  }
 }

@@ -8,11 +8,9 @@ export default router;
 router.use(restrictToCashier);
 
 async function addOrder(req: Request, res: Response) {
-  const cashier = req.body.cashier;
-  const customer_name = req.body.customer;
-  const phone = req.body.phone;
-  const items = req.body.items;
+  const { date, cashier, customer_name, phone, items } = req.body;
   const order = await database.createOrder(
+    date,
     customer_name,
     phone,
     items,
@@ -50,7 +48,21 @@ async function processOrder(req: Request, res: Response) {
   } else return res.status(500).json({ error: result });
 }
 
+async function listOrders(req: Request, res: Response) {
+  const date = req.body.date;
+  const result = await database.getOrders(date);
+  return result ? res.status(200).json(result) : res.status(404);
+}
+
+async function getOrder(req: Request, res: Response) {
+  const id = req.body.id;
+  const result = await database.getOrder(id);
+  return result ? res.status(200).json(result) : res.status(404);
+}
+
 router.post("/addOrder", addOrder);
 router.post("/cancelOrder", cancelOrder);
 router.post("/updateOrder", updateOrder);
 router.post("/processOrder", processOrder);
+router.get("/listOrders", listOrders);
+router.get("/viewOrder", getOrder);
