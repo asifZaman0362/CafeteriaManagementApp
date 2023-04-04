@@ -6,7 +6,7 @@ import {
   getTokenVersion,
   addUser,
   updateUser,
-} from "./database";
+} from "./database/user";
 import crypto from "crypto";
 import { AccessLevel } from "./database/types";
 
