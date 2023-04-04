@@ -5,6 +5,14 @@ import { getPasswordHash, getTokenVersion } from "./database/user";
 import crypto from "crypto";
 import { AccessLevel } from "./database/types";
 
+declare global {
+  namespace Express {
+    export interface Request {
+      accessLevel: AccessLevel;
+    }
+  }
+}
+
 interface AccessToken {
   username: string;
   accessLevel: AccessLevel;
@@ -33,6 +41,17 @@ export async function checkPassword(
   }
 }
 
+export async function authoriseRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const token = getToken(req);
+  if (!token) return res.status(401);
+  req.accessLevel = token.accessLevel;
+  return next();
+}
+
 export async function restrictToManager(
   req: Request,
   res: Response,
@@ -58,17 +77,19 @@ export async function restrictToCashier(
 }
 
 export function getToken(req: Request): AccessToken | null {
-  if (req.cookies["jsonwebtoken"]) {
+  const token = req.header("Authorization");
+  if (token) {
     let secret = process.env.TOKEN_SECRET as string;
     if (secret == undefined) {
       secret = crypto.randomBytes(32).toString("base64");
       process.env.TOKEN_SECRET = secret;
     }
-    const token = jwt.verify(
-      req.cookies["jsonwebtoken"],
-      process.env.TOKEN_SECRET || ""
-    );
-    return token as AccessToken;
+    try {
+      const verified = jwt.verify(token, process.env.TOKEN_SECRET || "");
+      return verified as AccessToken;
+    } catch (error) {
+      return null;
+    }
   } else return null;
 }
 

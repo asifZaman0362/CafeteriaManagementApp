@@ -1,8 +1,11 @@
 import { Request, Response, Router } from "express";
 import * as database from "./database/inventory";
+import { restrictToManager } from "./auth";
 
 const router = Router();
 export default router;
+
+router.use(restrictToManager);
 
 async function addItem(req: Request, res: Response) {
   const { name, quantity } = req.body;

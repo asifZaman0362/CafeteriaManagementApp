@@ -8,19 +8,22 @@ import inventory from "./inventory";
 import authentication from "./authentcation";
 import { setup } from "./database";
 import bodyParser from "body-parser";
+import cors from "cors";
+import { authoriseRequest } from "./auth";
 
 dotenv.config();
 
 const app: express.Application = express();
 
 app.use(bodyParser.json());
+app.use(cors({ origin: "*" })); // TODO: change this to match only local server where frontend is running
 
 // setup routes here
-app.use("/attendace", attendace);
-app.use("/access", access);
-app.use("/menu", menu);
-app.use("/billing", ordering);
-app.use("/inventory", inventory);
+app.use("/attendace", authoriseRequest, attendace);
+app.use("/access", authoriseRequest, access);
+app.use("/menu", authoriseRequest, menu);
+app.use("/billing", authoriseRequest, ordering);
+app.use("/inventory", authoriseRequest, inventory);
 app.use("/auth", authentication);
 
 app.listen(process.env.PORT_NUMBER, async () => {

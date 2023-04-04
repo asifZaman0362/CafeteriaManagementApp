@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import * as database from "./database/menu";
+import { restrictToManager, restrictToCashier } from "./auth";
 
 const router = Router();
 export default router;

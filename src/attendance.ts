@@ -5,9 +5,12 @@ import {
   removeRecord,
   getRecord,
 } from "./database/attendance";
+import { restrictToManager } from "./auth";
 
 const router = Router();
 export default router;
+
+router.use(restrictToManager);
 
 async function createAttendance(req: Request, res: Response) {
   const date = req.body.date;

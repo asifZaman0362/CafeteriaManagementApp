@@ -1,8 +1,11 @@
 import { Request, Response, Router } from "express";
 import * as database from "./database/employee";
+import { restrictToManager } from "./auth";
 
 const router = Router();
 export default router;
+
+router.use(restrictToManager);
 
 async function addEmployee(req: Request, res: Response) {
   const { firstname, lastname, phoneNumber, emailId, address } = req.body;
