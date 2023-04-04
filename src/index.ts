@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import attendace from "./attendance";
 import access from "./access";
 import menu from "./menu";
-import billing from "./billing";
+import ordering from "./ordering";
 import inventory from "./inventory";
 import authentication from "./authentcation";
 import { setup } from "./database";
@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use("/attendace", attendace);
 app.use("/access", access);
 app.use("/menu", menu);
-app.use("/billing", billing);
+app.use("/billing", ordering);
 app.use("/inventory", inventory);
 app.use("/auth", authentication);
 
