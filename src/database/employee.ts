@@ -64,3 +64,7 @@ export async function updateEmployee(
 export async function removeEmployee(id: string) {
   return await (await Employee.findById(id))?.delete();
 }
+
+export async function getEmployees() {
+  return await Employee.find();
+}

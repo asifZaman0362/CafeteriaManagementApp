@@ -41,6 +41,21 @@ async function updateEmployee(req: Request, res: Response) {
   } else return res.status(500);
 }
 
+async function listEmployees(_req: Request, res: Response) {
+  const employees = await database.getEmployees();
+  return res.status(200).json(employees);
+}
+
+async function getEmployee(req: Request, res: Response) {
+  const id = req.body.id;
+  const emp = await database.getEmployeeById(id);
+  if (emp) {
+    return res.status(200).json(emp);
+  } else return res.status(404);
+}
+
 router.post("/addEmployee", addEmployee);
 router.post("/removeEmployee", removeEmployee);
 router.post("/updateEmployee", updateEmployee);
+router.get("/listEmployees", listEmployees);
+router.get("/getEmployee", getEmployee);
