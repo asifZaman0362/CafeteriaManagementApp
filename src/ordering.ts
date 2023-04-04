@@ -1,8 +1,11 @@
 import { Request, Response, Router } from "express";
 import * as database from "./database/order";
+import { restrictToCashier } from "./auth";
 
 const router = Router();
 export default router;
+
+router.use(restrictToCashier);
 
 async function addOrder(req: Request, res: Response) {
   const cashier = req.body.cashier;

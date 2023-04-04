@@ -1,9 +1,12 @@
 import { Request, Response, Router } from "express";
 import { AccessLevel } from "./database/types";
 import * as database from "./database/user";
+import { restrictToManager } from "./auth";
 
 const router = Router();
 export default router;
+
+router.use(restrictToManager);
 
 async function addUser(req: Request, res: Response) {
   const username = req.body.username;

@@ -72,3 +72,20 @@ export async function removeItem(item_id: string) {
   const item = await Item.findById(item_id);
   return await item?.delete();
 }
+
+export async function listCategories() {
+  return await Category.find();
+}
+
+export async function getItem(id: string) {
+  return await Item.findById(id);
+}
+
+export async function getItems(categoies: string[]) {
+  const items = [];
+  for (let category of categoies) {
+    let cat_id = new Types.ObjectId(category);
+    items.push(...(await Item.find({ category: cat_id })));
+  }
+  return items;
+}
