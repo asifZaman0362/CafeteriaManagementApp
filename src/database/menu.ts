@@ -85,7 +85,8 @@ export async function getItems(categoies: string[]) {
   const items = [];
   for (let category of categoies) {
     let cat_id = new Types.ObjectId(category);
-    items.push(...(await Item.find({ category: cat_id })));
+    let found = await Item.find({ category: cat_id });
+    items.push(...found);
   }
   return items;
 }
