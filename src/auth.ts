@@ -16,6 +16,7 @@ declare global {
 interface AccessToken {
   username: string;
   accessLevel: AccessLevel;
+  id: number;
 }
 
 export async function getHash(password: string): Promise<string> {
@@ -46,7 +47,7 @@ export async function authoriseRequest(
   res: Response,
   next: NextFunction
 ) {
-  const token = getToken(req);
+  const token = await getToken(req);
   if (!token) return res.status(401);
   req.accessLevel = token.accessLevel;
   return next();
@@ -58,7 +59,7 @@ export async function restrictToManager(
   next: NextFunction
 ) {
   // Extract jwt, verify and get accesslevel field
-  const accessLevel = getToken(req)?.accessLevel;
+  const accessLevel = (await getToken(req))?.accessLevel;
   if (accessLevel == AccessLevel.Manager) {
     return next();
   } else return res.status(401).json({ error: "Not a manager" });
@@ -70,13 +71,13 @@ export async function restrictToCashier(
   next: NextFunction
 ) {
   // Extract jwt, verify and get accesslevel field
-  const accessLevel = getToken(req)?.accessLevel;
+  const accessLevel = (await getToken(req))?.accessLevel;
   if (accessLevel == AccessLevel.Cashier) {
     return next();
   } else return res.status(401).json({ error: "Not a cashier" });
 }
 
-export function getToken(req: Request): AccessToken | null {
+export async function getToken(req: Request) {
   const token = req.header("Authorization");
   if (token) {
     let secret = process.env.TOKEN_SECRET as string;
@@ -85,8 +86,16 @@ export function getToken(req: Request): AccessToken | null {
       process.env.TOKEN_SECRET = secret;
     }
     try {
-      const verified = jwt.verify(token, process.env.TOKEN_SECRET || "");
-      return verified as AccessToken;
+      const verified = jwt.verify(
+        token,
+        process.env.TOKEN_SECRET || ""
+      ) as AccessToken;
+      if (
+        verified.id ==
+        (await getTokenVersion(verified.username, verified.accessLevel))
+      ) {
+        return verified;
+      } else return null;
     } catch (error) {
       return null;
     }
@@ -94,9 +103,15 @@ export function getToken(req: Request): AccessToken | null {
 }
 
 export async function generateToken(username: string, usertype: AccessLevel) {
+  // get token version, defaults to 0
+  // if returns null, then user doesnt exist
   const tokenVersion = await getTokenVersion(username, usertype);
   if (tokenVersion) {
-    const token = { username: username, usertype: usertype, id: tokenVersion };
+    const token = {
+      username: username,
+      accessLevel: usertype,
+      id: tokenVersion,
+    };
     if (process.env.TOKEN_SECRET == undefined) {
       process.env.TOKEN_SECRET = crypto.randomBytes(32).toString("base64");
     }

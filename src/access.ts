@@ -15,9 +15,9 @@ async function addUser(req: Request, res: Response) {
   const email = req.body.email;
   const result = await database.addUser(username, password, email, accessLevel);
   if (result) {
-    return res.status(200);
+    return res.status(200).send();
   } else {
-    return res.status(500);
+    return res.status(500).send();
   }
 }
 
@@ -26,9 +26,9 @@ async function removeUser(req: Request, res: Response) {
   const accessLevel = req.body.accessLevel;
   const result = await database.removeUser(username, accessLevel);
   if (result) {
-    return res.status(200);
+    return res.status(200).send();
   } else {
-    return res.status(500);
+    return res.status(500).send();
   }
 }
 
@@ -38,9 +38,9 @@ async function updateUser(req: Request, res: Response) {
   const email = req.body.email;
   const result = await database.updateUser(username, password, email);
   if (result) {
-    return res.status(200);
+    return res.status(200).send();
   } else {
-    return res.status(500);
+    return res.status(500).send();
   }
 }
 

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import attendace from "./attendance";
 import access from "./access";
@@ -9,7 +9,9 @@ import authentication from "./authentcation";
 import { setup } from "./database";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { authoriseRequest } from "./auth";
+import { authoriseRequest, checkPassword, generateToken } from "./auth";
+import { AccessLevel } from "./database/types";
+import { registerUser } from "./database/user";
 
 dotenv.config();
 

@@ -18,15 +18,15 @@ async function addOrder(req: Request, res: Response) {
   );
   if (order) {
     return res.status(200).json({ id: order });
-  } else return res.status(500);
+  } else return res.status(500).send();
 }
 
 async function cancelOrder(req: Request, res: Response) {
   const id = req.body.order_id;
   const result = await database.cancelOrder(id);
   if (result) {
-    return res.status(200);
-  } else return res.status(500);
+    return res.status(200).send();
+  } else return res.status(500).send();
 }
 
 async function updateOrder(req: Request, res: Response) {
@@ -35,7 +35,7 @@ async function updateOrder(req: Request, res: Response) {
   const order = await database.updateItems(id, items);
   if (order) {
     return res.status(200).json({ id: order });
-  } else return res.status(500);
+  } else return res.status(500).send();
 }
 
 async function processOrder(req: Request, res: Response) {
@@ -44,20 +44,20 @@ async function processOrder(req: Request, res: Response) {
   const order_id = req.body.order_id;
   const result = await database.setPaid(order_id);
   if (result == database.PaymentStatus.Successfull) {
-    return res.status(200);
+    return res.status(200).send();
   } else return res.status(500).json({ error: result });
 }
 
 async function listOrders(req: Request, res: Response) {
   const date = req.body.date;
   const result = await database.getOrders(date);
-  return result ? res.status(200).json(result) : res.status(404);
+  return result ? res.status(200).json(result) : res.status(404).send();
 }
 
 async function getOrder(req: Request, res: Response) {
   const id = req.body.id;
   const result = await database.getOrder(id);
-  return result ? res.status(200).json(result) : res.status(404);
+  return result ? res.status(200).json(result) : res.status(404).send();
 }
 
 router.post("/addOrder", addOrder);

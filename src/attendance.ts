@@ -18,7 +18,7 @@ async function createAttendance(req: Request, res: Response) {
   const creationResult = await addRecord(date, entries);
   if (creationResult) {
     return res.status(200).json({ status: "Success" });
-  } else return res.status(500);
+  } else return res.status(500).send();
 }
 
 async function listAttendance(req: Request, res: Response) {
@@ -33,8 +33,8 @@ async function updateEntry(req: Request, res: Response) {
   const entries = req.body.entries;
   const result = await updateRecord(id, date, entries);
   if (result) {
-    return res.status(200);
-  } else return res.status(500);
+    return res.status(200).send();
+  } else return res.status(500).send();
 }
 
 async function deleteRecord(req: Request, res: Response) {

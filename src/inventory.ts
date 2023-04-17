@@ -11,24 +11,24 @@ async function addItem(req: Request, res: Response) {
   const { name, quantity } = req.body;
   const result = await database.addItem(name, quantity);
   if (result) {
-    return res.status(200);
-  } else return res.status(500);
+    return res.status(200).send();
+  } else return res.status(500).send();
 }
 
 async function removeItem(req: Request, res: Response) {
   const id = req.body.id;
   const result = await database.removeItem(id);
   if (result) {
-    return res.status(200);
-  } else return res.status(500);
+    return res.status(200).send();
+  } else return res.status(500).send();
 }
 
 async function updateItem(req: Request, res: Response) {
   const { id, name, quantity } = req.body;
   const result = await database.updateItem(id, name, quantity);
   if (result) {
-    return res.status(200);
-  } else return res.status(500);
+    return res.status(200).send();
+  } else return res.status(500).send();
 }
 
 async function listInventory(_req: Request, res: Response) {

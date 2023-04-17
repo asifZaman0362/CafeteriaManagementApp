@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { getHash } from "../auth";
 import { AccessLevel } from "./types";
 
 interface IUser {
@@ -57,6 +58,18 @@ export async function updateTokenVersion(
   }
 }
 
+export async function registerUser(
+  username: string,
+  password: string,
+  email: string
+) {
+  if ((await User.find()).length > 0) {
+    return false;
+  } else {
+    return await addUser(username, password, email, AccessLevel.Manager);
+  }
+}
+
 export async function addUser(
   username: string,
   password: string,
@@ -71,6 +84,7 @@ export async function addUser(
     console.log("User already exists!");
     return false;
   }
+  password = await getHash(password);
   let user = new User({
     username: username,
     password: password,
@@ -89,7 +103,7 @@ export async function updateUser(
   let user = await User.findOne({ username: username });
   if (user != null) {
     user.email = email;
-    user.password = password;
+    user.password = await getHash(password);
     return await user.save();
   } else {
     return false;
