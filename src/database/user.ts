@@ -91,7 +91,6 @@ export async function addUser(
     accessLevel: accessLevel,
     email: email,
   });
-  console.debug(username, email, password);
   return await user.save();
 }
 

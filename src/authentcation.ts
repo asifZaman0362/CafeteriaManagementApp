@@ -18,7 +18,9 @@ router.get("/logout", logout);
 router.get("/validateToken", authoriseRequest, validateToken);
 
 async function validateToken(req: Request, res: Response) {
-  return res.status(200).send();
+  console.log("validate request");
+  let user = await getToken(req);
+  return res.status(200).json(user);
 }
 
 async function login(req: Request, res: Response) {
@@ -26,6 +28,7 @@ async function login(req: Request, res: Response) {
   let { username, password, accessLevel } = req.body;
   if (await checkPassword(username, password, accessLevel as AccessLevel)) {
     let tk = await generateToken(username, accessLevel as AccessLevel);
+    console.debug("token: ", tk);
     return res.status(200).json({ token: tk });
   } else return res.status(401).send();
 }

@@ -13,6 +13,8 @@ declare global {
   }
 }
 
+let x = 10;
+
 interface AccessToken {
   username: string;
   accessLevel: AccessLevel;
@@ -34,6 +36,7 @@ export async function checkPassword(
       accessLevel
     );
     if (stored_hash) {
+      console.log("verifying hash");
       return await argon2.verify(stored_hash, password);
     } else return false;
   } catch (error: any) {
@@ -47,8 +50,10 @@ export async function authoriseRequest(
   res: Response,
   next: NextFunction
 ) {
+  console.log("authorising");
   const token = await getToken(req);
-  if (!token) return res.status(401);
+  console.log(token);
+  if (!token) return res.status(401).json({ error: "failed to verify token" });
   req.accessLevel = token.accessLevel;
   return next();
 }
@@ -90,6 +95,7 @@ export async function getToken(req: Request) {
         token,
         process.env.TOKEN_SECRET || ""
       ) as AccessToken;
+      console.debug("hello");
       if (
         verified.id ==
         (await getTokenVersion(verified.username, verified.accessLevel))
@@ -97,6 +103,7 @@ export async function getToken(req: Request) {
         return verified;
       } else return null;
     } catch (error) {
+      console.error(error);
       return null;
     }
   } else return null;
@@ -106,7 +113,7 @@ export async function generateToken(username: string, usertype: AccessLevel) {
   // get token version, defaults to 0
   // if returns null, then user doesnt exist
   const tokenVersion = await getTokenVersion(username, usertype);
-  if (tokenVersion) {
+  if (tokenVersion != null || tokenVersion != undefined) {
     const token = {
       username: username,
       accessLevel: usertype,
