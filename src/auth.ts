@@ -36,7 +36,6 @@ export async function checkPassword(
       accessLevel
     );
     if (stored_hash) {
-      console.log("verifying hash");
       return await argon2.verify(stored_hash, password);
     } else return false;
   } catch (error: any) {
@@ -50,9 +49,7 @@ export async function authoriseRequest(
   res: Response,
   next: NextFunction
 ) {
-  console.log("authorising");
   const token = await getToken(req);
-  console.log(token);
   if (!token) return res.status(401).json({ error: "failed to verify token" });
   req.accessLevel = token.accessLevel;
   return next();
@@ -95,7 +92,6 @@ export async function getToken(req: Request) {
         token,
         process.env.TOKEN_SECRET || ""
       ) as AccessToken;
-      console.debug("hello");
       if (
         verified.id ==
         (await getTokenVersion(verified.username, verified.accessLevel))

@@ -22,7 +22,7 @@ async function addEmployee(req: Request, res: Response) {
 }
 
 async function removeEmployee(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.params.id;
   const result = await database.removeEmployee(id);
   if (result) {
     return res.status(200);
@@ -58,7 +58,7 @@ async function getEmployee(req: Request, res: Response) {
 }
 
 router.post("/addEmployee", addEmployee);
-router.post("/removeEmployee", removeEmployee);
+router.delete("/removeEmployee/:id", removeEmployee);
 router.post("/updateEmployee", updateEmployee);
 router.get("/listEmployees", listEmployees);
 router.get("/getEmployee", getEmployee);

@@ -16,7 +16,7 @@ async function addItem(req: Request, res: Response) {
 }
 
 async function removeItem(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.params.id;
   const result = await database.removeItem(id);
   if (result) {
     return res.status(200).send();
@@ -37,6 +37,6 @@ async function listInventory(_req: Request, res: Response) {
 }
 
 router.post("/addItem", addItem);
-router.post("/removeItem", removeItem);
+router.delete("/removeItem/:id", removeItem);
 router.post("/updateItem", updateItem);
 router.get("/listInventory", listInventory);

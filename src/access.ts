@@ -22,8 +22,8 @@ async function addUser(req: Request, res: Response) {
 }
 
 async function removeUser(req: Request, res: Response) {
-  const username = req.body.username;
-  const accessLevel = req.body.accessLevel;
+  const username = req.params.username;
+  const accessLevel = req.params.access as AccessLevel;
   const result = await database.removeUser(username, accessLevel);
   if (result) {
     return res.status(200).send();
@@ -55,7 +55,7 @@ async function listUsers(_req: Request, res: Response) {
 }
 
 router.post("/addUser", addUser);
-router.post("/removeUser", removeUser);
+router.delete("/removeUser/:access/:username", removeUser);
 router.post("/updateUser", updateUser);
 router.get("/listUsers", listUsers);
 router.get("/viewUser", getUser);

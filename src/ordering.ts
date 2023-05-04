@@ -8,21 +8,15 @@ export default router;
 router.use(restrictToCashier);
 
 async function addOrder(req: Request, res: Response) {
-  const { date, cashier, customer_name, phone, items } = req.body;
-  const order = await database.createOrder(
-    date,
-    customer_name,
-    phone,
-    items,
-    cashier
-  );
+  const { date, customer_name, phone, items } = req.body;
+  const order = await database.createOrder(date, customer_name, phone, items);
   if (order) {
     return res.status(200).json({ id: order });
   } else return res.status(500).send();
 }
 
 async function cancelOrder(req: Request, res: Response) {
-  const id = req.body.order_id;
+  const id = req.params.id;
   const result = await database.cancelOrder(id);
   if (result) {
     return res.status(200).send();
@@ -30,7 +24,7 @@ async function cancelOrder(req: Request, res: Response) {
 }
 
 async function updateOrder(req: Request, res: Response) {
-  const id = req.body.order_id;
+  const id = req.body.id;
   const items = req.body.items;
   const order = await database.updateItems(id, items);
   if (order) {
@@ -49,20 +43,25 @@ async function processOrder(req: Request, res: Response) {
 }
 
 async function listOrders(req: Request, res: Response) {
-  const date = req.body.date;
+  const dateString = req.query.date?.toString();
+  if (!dateString)
+    return res.status(200).json(await database.getOrders(undefined));
+  const date = new Date(dateString);
   const result = await database.getOrders(date);
   return result ? res.status(200).json(result) : res.status(404).send();
 }
 
 async function getOrder(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.query.id?.toString();
+  console.log("orderId: ", id);
+  if (!id) return res.status(404).send();
   const result = await database.getOrder(id);
   return result ? res.status(200).json(result) : res.status(404).send();
 }
 
 router.post("/addOrder", addOrder);
-router.post("/cancelOrder", cancelOrder);
+router.delete("/cancelOrder/:id", cancelOrder);
 router.post("/updateOrder", updateOrder);
 router.post("/processOrder", processOrder);
-router.get("/listOrders", listOrders);
+router.get("/viewOrders", listOrders);
 router.get("/viewOrder", getOrder);

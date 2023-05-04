@@ -38,11 +38,11 @@ async function updateEntry(req: Request, res: Response) {
 }
 
 async function deleteRecord(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.params.id;
   return await removeRecord(id);
 }
 
 router.post("/submit", createAttendance);
 router.post("/update", updateEntry);
-router.get("/remove", deleteRecord);
+router.delete("/remove/:id", deleteRecord);
 router.get("/list", listAttendance);

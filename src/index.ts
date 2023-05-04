@@ -10,12 +10,15 @@ import { setup } from "./database";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { authoriseRequest, checkPassword, generateToken } from "./auth";
+import employee from "./employee";
 import { AccessLevel } from "./database/types";
 import { registerUser } from "./database/user";
 
 dotenv.config();
 
 const app: express.Application = express();
+
+app.use(express.static("static"));
 
 app.use(bodyParser.json());
 app.use(cors({ origin: "*" })); // TODO: change this to match only local server where frontend is running
@@ -26,6 +29,7 @@ app.use("/access", authoriseRequest, access);
 app.use("/menu", authoriseRequest, menu);
 app.use("/billing", authoriseRequest, ordering);
 app.use("/inventory", authoriseRequest, inventory);
+app.use("/employee", authoriseRequest, employee);
 app.use("/auth", authentication);
 
 app.listen(process.env.PORT_NUMBER, async () => {

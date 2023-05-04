@@ -15,26 +15,42 @@ declare global {
 const router = Router();
 export default router;
 
-const STATIC_LOCATION = __dirname + "../static/";
-
-const Storage = diskStorage({
-  destination: (_req: any, _file: any, cb: any) =>
-    cb(null, `${STATIC_LOCATION}/thumbnails/`),
-  filename: (_req: any, file: any, cb: any) => cb(null, file.fileId + ".jpg"),
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "static/thumbnails");
+  },
+  filename: (req, file, cb) => {
+    let filename = crypto.randomUUID();
+    req.fileId = filename;
+    cb(null, filename);
+  },
 });
 
-const upload = multer({ storage: Storage });
+const upload = multer({ storage: storage });
 
 async function addItem(req: Request, res: Response, next: NextFunction) {
-  const { name, price, category_id } = req.body;
+  const { name, price, category } = req.body;
+  let filename = req.fileId;
+  const category_id = await database.getCategoryByName(category);
+  if (!category_id) {
+    return res.status(500).send("could not find category");
+  }
   const result = await database.addItem(name, price, category_id);
   if (result) {
+    let id = result.id;
+    fs.rename(
+      `static/thumbnails/${filename}`,
+      `static/thumbnails/${id}.jpg`,
+      (err) => {
+        console.error(err);
+      }
+    );
     return next();
   } else return res.status(500).send();
 }
 
 async function removeItem(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.params.id;
   const result = await database.removeItem(id);
   if (result) {
     try {
@@ -61,12 +77,13 @@ async function addCategory(req: Request, res: Response) {
   const name = req.body.name;
   const result = await database.addCategory(name);
   if (result) {
-    return res.status(200).send();
+    console.log("added");
+    return res.status(200).json({ id: result.id });
   } else return res.status(500).send();
 }
 
 async function removeCategory(req: Request, res: Response) {
-  const id = req.body.id;
+  const id = req.params.id;
   const result = await database.removeCategory(id);
   if (result) {
     return res.status(200).send();
@@ -82,20 +99,31 @@ async function updateCategory(req: Request, res: Response) {
 }
 
 async function getItem(req: Request, res: Response) {
-  const id = req.body.id;
-  const result = await database.getItem(id);
+  const id = req.query.id;
+  if (!id) return res.send(400).send();
+  const result = await database.getItem(id.toString());
   if (result) {
-    return res
-      .status(200)
-      .json({ ...result, thumbnail: `thumbnails/${result.id}` });
+    return res.status(200).json({
+      name: result.name,
+      price: result.price,
+      id: result.id,
+      thumbnail: `/thumbnails/${result.id}.jpg`,
+    });
   } else return res.status(404).send();
 }
 
 async function listItems(req: Request, res: Response) {
-  const categories = req.body.categories;
-  const found = await database.getItems(categories);
+  let category = req.query.category?.toString();
+  console.log(category);
+  if (!category || category == "null") category = "";
+  const found = await database.getItems(category);
   let result = found?.map((item) => {
-    return { ...item, thumbnail: `thumbnails/${item.id}` };
+    return {
+      name: item.name,
+      price: item.price,
+      id: item.id,
+      thumbnail: `/thumbnails/${item.id}.jpg`,
+    };
   });
   if (result) {
     return res.status(200).json(result);
@@ -111,20 +139,20 @@ async function listCategories(_req: Request, res: Response) {
 router.post(
   "/addItem",
   restrictToManager,
-  addItem,
   upload.single("thumbnail"),
+  addItem,
   (_req, res: Response) => res.status(200)
 );
-router.post("/removeItem", restrictToManager, removeItem);
+router.delete("/removeItem/:id", restrictToManager, removeItem);
 router.post(
   "/updateItem",
   restrictToManager,
-  updateItem,
   upload.single("thumbnail"),
+  updateItem,
   (_req, res: Response) => res.status(200)
 );
 router.post("/addCategory", restrictToManager, addCategory);
-router.post("/removeCategory", restrictToManager, removeCategory);
+router.delete("/removeCategory/:id", restrictToManager, removeCategory);
 router.post("/updateCategory", restrictToManager, updateCategory);
 router.get("/getItem", getItem);
 router.get("/listItems", listItems);

@@ -77,16 +77,19 @@ export async function listCategories() {
   return await Category.find();
 }
 
-export async function getItem(id: string) {
-  return await Item.findById(id);
+export async function getCategoryByName(name: string) {
+  let item = await Category.findOne({ name: name });
+  return item?._id.toString();
 }
 
-export async function getItems(categoies: string[]) {
-  const items = [];
-  for (let category of categoies) {
-    let cat_id = new Types.ObjectId(category);
-    let found = await Item.find({ category: cat_id });
-    items.push(...found);
+export async function getItem(id: string) {
+  return await Item.findOne({ _id: id });
+}
+
+export async function getItems(category: string) {
+  if (!category) {
+    return await Item.find({});
   }
-  return items;
+  let cat_id = new Types.ObjectId(category);
+  return await Item.find({ category: cat_id });
 }

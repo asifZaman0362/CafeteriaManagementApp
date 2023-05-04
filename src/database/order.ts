@@ -6,7 +6,7 @@ export interface Item {
 }
 
 export interface RawItem {
-  item_id: string;
+  id: string;
   quantity: number;
 }
 
@@ -20,7 +20,6 @@ export enum PaymentStatus {
 
 interface IOrder extends Document {
   date: Date;
-  cashier_id: Types.ObjectId;
   customer_name: string;
   customer_phone: string;
   items: Item[];
@@ -39,23 +38,11 @@ const ItemSchema = new Schema<Item>({
 
 const OrderSchema = new Schema<IOrder>({
   date: { type: Date, required: true },
-  cashier_id: { type: Schema.Types.ObjectId, required: true },
   customer_name: { type: String, required: true },
   customer_phone: { type: String, required: true },
   items: { type: [ItemSchema], required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, required: false },
   paid: { type: Boolean, default: false, required: true },
-});
-
-OrderSchema.pre<IOrder>("validate", function (next) {
-  if (this.cashier_id && typeof this.cashier_id == "string") {
-    try {
-      this.cashier_id = new Types.ObjectId(this.cashier_id);
-    } catch (err) {
-      next(new Error("invalid id"));
-    }
-  }
-  next();
 });
 
 export const Order = model<IOrder>("Order", OrderSchema);
@@ -64,15 +51,13 @@ export async function createOrder(
   date: Date,
   customer: string,
   phone: string,
-  items: Item[],
-  cashier: string
+  items: Item[]
 ) {
   const order = new Order({
     date: date,
     customer_name: customer,
     customer_phone: phone,
     items: items,
-    cashier_id: cashier,
   });
   return await (
     await order.save()
@@ -80,54 +65,84 @@ export async function createOrder(
 }
 
 export async function cancelOrder(order_id: string) {
-  const order = await Order.findById(order_id);
-  if (!order) return null;
-  else if (order.paid) return null;
-  else return await order.delete();
+  try {
+    console.log("id: ", order_id);
+    const order = await Order.findOne({
+      _id: Types.ObjectId.createFromHexString(order_id) as Types.ObjectId,
+    });
+    if (!order) return null;
+    else {
+      console.log("deleting...");
+      return await Order.deleteOne({
+        _id: Types.ObjectId.createFromHexString(order_id) as Types.ObjectId,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function addItems(order_id: string, items: RawItem[]) {
-  const order = await Order.findById(order_id);
-  if (!order) return null;
-  else if (order.paid) return null;
-  else {
-    const newItems = items.map((item) => ({
-      item_id: new Types.ObjectId(item.item_id),
-      quantity: item.quantity,
-    }));
-    order.items.push(...newItems);
-    return order.save();
+  try {
+    const order = await Order.findById(order_id);
+    if (!order) return null;
+    else if (order.paid) return null;
+    else {
+      const newItems = items.map((item) => ({
+        item_id: Types.ObjectId.createFromHexString(item.id) as Types.ObjectId,
+        quantity: item.quantity,
+      }));
+      order.items.push(...newItems);
+      return order.save();
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
 export async function updateItems(order_id: string, items: RawItem[]) {
-  const order = await Order.findById(order_id);
-  if (!order) return false;
-  else if (order.paid) return null;
-  else {
-    order.items = items.map((item) => ({
-      item_id: new Types.ObjectId(item.item_id),
-      quantity: item.quantity,
-    }));
-    return await order.save();
+  try {
+    const order = await Order.findById(order_id);
+    if (!order) return false;
+    else if (order.paid) return null;
+    else {
+      console.debug(items);
+      order.items = items.map((item) => ({
+        item_id: Types.ObjectId.createFromHexString(item.id) as Types.ObjectId,
+        quantity: item.quantity,
+      }));
+      return await order.save();
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
 export async function setPaid(order_id: string): Promise<PaymentStatus> {
-  const order = await Order.findById(order_id);
-  if (!order) return PaymentStatus.OrderDoesntExist;
-  else if (order.paid) return PaymentStatus.AlreadyPaid;
-  order.paid = true;
-  if (await order.save()) return PaymentStatus.Successfull;
-  else return PaymentStatus.InternalError;
+  try {
+    const order = await Order.findById(order_id);
+    if (!order) return PaymentStatus.OrderDoesntExist;
+    else if (order.paid) return PaymentStatus.AlreadyPaid;
+    order.paid = true;
+    if (await order.save()) return PaymentStatus.Successfull;
+    else return PaymentStatus.InternalError;
+  } catch (error) {
+    console.error(error);
+    return PaymentStatus.OrderDoesntExist;
+  }
 }
 
 export async function getOrder(order_id: string) {
-  return await Order.findById(new Types.ObjectId(order_id));
+  try {
+    return await Order.findById(new Types.ObjectId(order_id));
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function getOrders(date: Date | undefined) {
   if (date) {
     return await Order.find({ date: Date });
   }
+  return await Order.find({});
 }
