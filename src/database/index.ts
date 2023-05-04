@@ -1,5 +1,7 @@
 import { connect } from "mongoose";
 
 export async function setup() {
-  return await connect("mongodb://127.0.0.1:27017/test");
+  return await connect(
+    "mongodb+srv://zero:asif@cluster0.ec7mgai.mongodb.net/?retryWrites=true&w=majority"
+  );
 }
