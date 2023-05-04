@@ -16,10 +16,10 @@ const router = Router();
 export default router;
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req: any, _file: any, cb: any) => {
     cb(null, "static/thumbnails");
   },
-  filename: (req, file, cb) => {
+  filename: (req: any, _file: any, cb: any) => {
     let filename = crypto.randomUUID();
     req.fileId = filename;
     cb(null, filename);
