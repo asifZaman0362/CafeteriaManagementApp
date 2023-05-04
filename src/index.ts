@@ -5,6 +5,7 @@ import access from "./access";
 import menu from "./menu";
 import ordering from "./ordering";
 import inventory from "./inventory";
+import sales from "./sales";
 import authentication from "./authentcation";
 import { setup } from "./database";
 import bodyParser from "body-parser";
@@ -31,6 +32,7 @@ app.use("/billing", authoriseRequest, ordering);
 app.use("/inventory", authoriseRequest, inventory);
 app.use("/employee", authoriseRequest, employee);
 app.use("/auth", authentication);
+app.use("/sales", sales);
 
 app.listen(process.env.PORT_NUMBER, async () => {
   let connection = await setup();

@@ -13,8 +13,6 @@ declare global {
   }
 }
 
-let x = 10;
-
 interface AccessToken {
   username: string;
   accessLevel: AccessLevel;
@@ -73,6 +71,7 @@ export async function restrictToCashier(
   next: NextFunction
 ) {
   // Extract jwt, verify and get accesslevel field
+  console.log("validating cashier");
   const accessLevel = (await getToken(req))?.accessLevel;
   if (accessLevel == AccessLevel.Cashier) {
     return next();

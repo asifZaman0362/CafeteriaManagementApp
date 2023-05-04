@@ -1,4 +1,6 @@
 import { Document, Schema, model, Types } from "mongoose";
+import * as sales from "./sales";
+import { getItem } from "./menu";
 
 export interface Item {
   item_id: Types.ObjectId;
@@ -119,13 +121,22 @@ export async function updateItems(order_id: string, items: RawItem[]) {
 }
 
 export async function setPaid(order_id: string): Promise<PaymentStatus> {
+  console.log("wtd");
   try {
     const order = await Order.findById(order_id);
     if (!order) return PaymentStatus.OrderDoesntExist;
     else if (order.paid) return PaymentStatus.AlreadyPaid;
     order.paid = true;
-    if (await order.save()) return PaymentStatus.Successfull;
-    else return PaymentStatus.InternalError;
+    let price = 0;
+    for (let item of order.items) {
+      let _item = await getItem(item.item_id.toString());
+      if (_item) price += _item.price * item.quantity;
+    }
+    order.price = price;
+    if (await order.save()) {
+      sales.addSale({ date: order.date.toDateString(), amount: price });
+      return PaymentStatus.Successfull;
+    } else return PaymentStatus.InternalError;
   } catch (error) {
     console.error(error);
     return PaymentStatus.OrderDoesntExist;
