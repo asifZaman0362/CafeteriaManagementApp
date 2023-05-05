@@ -22,9 +22,13 @@ async function createAttendance(req: Request, res: Response) {
 }
 
 async function listAttendance(req: Request, res: Response) {
-  const date = req.body.date;
-  const record = await getRecord(date);
-  return res.status(200).json(record);
+  try {
+    const date = req.params.date;
+    const record = await getRecord(new Date(date.toString()));
+    return res.status(200).json(record);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 }
 
 async function updateEntry(req: Request, res: Response) {
@@ -39,10 +43,11 @@ async function updateEntry(req: Request, res: Response) {
 
 async function deleteRecord(req: Request, res: Response) {
   const id = req.params.id;
-  return await removeRecord(id);
+  await removeRecord(id);
+  return res.status(200).send();
 }
 
 router.post("/submit", createAttendance);
 router.post("/update", updateEntry);
 router.delete("/remove/:id", deleteRecord);
-router.get("/list", listAttendance);
+router.get("/getRecord/:date", listAttendance);

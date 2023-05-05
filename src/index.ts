@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(cors({ origin: "*" })); // TODO: change this to match only local server where frontend is running
 
 // setup routes here
-app.use("/attendace", authoriseRequest, attendace);
+app.use("/attendance", authoriseRequest, attendace);
 app.use("/access", authoriseRequest, access);
 app.use("/menu", authoriseRequest, menu);
 app.use("/billing", authoriseRequest, ordering);

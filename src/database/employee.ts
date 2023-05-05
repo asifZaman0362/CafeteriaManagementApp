@@ -21,7 +21,8 @@ export const Employee = model<IEmployee>("Employee", EmployeeSchema);
 export async function getEmployeeById(id: string | Types.ObjectId) {
   return (
     (await Employee.findById(id)) || {
-      name: "no name",
+      firstname: "no name",
+      lastname: "no name",
     }
   );
 }

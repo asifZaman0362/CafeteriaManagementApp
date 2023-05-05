@@ -24,16 +24,17 @@ async function removeItem(req: Request, res: Response) {
 }
 
 async function updateItem(req: Request, res: Response) {
-  const { id, name, quantity } = req.body;
-  const result = await database.updateItem(id, name, quantity);
+  const { name, quantity } = req.body;
+  console.debug(name, quantity);
+  const result = await database.updateItem(name, quantity);
   if (result) {
     return res.status(200).send();
   } else return res.status(500).send();
 }
 
 async function listInventory(_req: Request, res: Response) {
-  const result = database.listInventory();
-  return result ? res.status(200).json(result) : res.status(404);
+  const result = await database.listInventory();
+  res.status(200).json(result);
 }
 
 router.post("/addItem", addItem);

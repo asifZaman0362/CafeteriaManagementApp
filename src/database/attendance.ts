@@ -30,21 +30,30 @@ export const Attendance = model<IAttendance>("Attendance", AttendanceSchema);
 
 export async function getRecord(date: Date) {
   const record = await Attendance.findOne({ date: date });
+  interface Entry {
+    name: string;
+    attendance: boolean;
+    userid: string;
+  }
   if (record) {
+    let entries: Entry[] = [];
+    for (let entry of record.entries) {
+      let emp = await getEmployeeById(entry.userid);
+      let name = "";
+      if (!emp) name = "";
+      name = `${emp.firstname} ${emp.lastname}`;
+      entries.push({
+        name: name,
+        userid: entry.userid.toString(),
+        attendance: entry.attendance,
+      });
+    }
     return {
-      date: date,
-      entries: record.entries.map(async (entry) => {
-        const name = await getEmployeeById(entry.userid);
-        return {
-          employee: {
-            id: entry.userid.toString(),
-            name: name,
-            present: entry.attendance,
-          },
-        };
-      }),
+      date: record.date,
+      entries: entries,
     };
   }
+  return null;
 }
 
 export async function addRecord(date: Date, entries: RawEntry[]) {
