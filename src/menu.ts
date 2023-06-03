@@ -3,6 +3,7 @@ import * as database from "./database/menu";
 import { restrictToManager } from "./auth";
 import multer, { diskStorage } from "multer";
 import fs from "fs";
+import crypto from "crypto";
 
 declare global {
   namespace Express {
